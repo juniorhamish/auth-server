@@ -2,7 +2,7 @@ package uk.co.dajohnston;
 
 public class My {
 
-    public static boolean foo() {
+    public boolean foo() {
         return true;
     }
 }

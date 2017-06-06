@@ -1,0 +1,37 @@
+security:
+  oauth2:
+    client:
+      client-id: dajohnston
+      client-secret: dajohnston-secret
+      scope: read,write
+      auto-approve-scopes: '.*'
+facebook:
+  client:
+    clientId: 1201312616661137
+    clientSecret: 274095c990d84c53a32c92bde19d250c
+    accessTokenUri: https://graph.facebook.com/oauth/access_token
+    userAuthorizationUri: https://www.facebook.com/dialog/oauth
+    tokenName: oauth_token
+    authenticationScheme: query
+    clientAuthenticationScheme: form
+  resource:
+    userInfoUri: https://graph.facebook.com/me
+github:
+  client:
+    clientId: 01d86d5d0d174d0465f6
+    clientSecret: 5f5130ef79830e13152a5239078ae4babe2acf0b
+    accessTokenUri: https://github.com/login/oauth/access_token
+    userAuthorizationUri: https://github.com/login/oauth/authorize
+    clientAuthenticationScheme: form
+  resource:
+    userInfoUri: https://api.github.com/user
+google:
+  client:
+    clientId: 952939262630-encciithstsfi9o7a6akdt4podp9trts.apps.googleusercontent.com
+    clientSecret: hFrra9CBJriDBdleOJ_lso2_
+    accessTokenUri: https://accounts.google.com/o/oauth2/token
+    userAuthorizationUri: https://accounts.google.com/o/oauth2/v2/auth
+    clientAuthenticationScheme: form
+    scope: https://www.googleapis.com/auth/userinfo.profile
+  resource:
+    userInfoUri: https://www.googleapis.com/userinfo/v2/me

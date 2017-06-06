@@ -8,6 +8,6 @@ public class MyTest {
 
     @Test
     public void foo() {
-        assertTrue(My.foo());
+        assertTrue(new My().foo());
     }
 }
