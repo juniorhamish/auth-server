@@ -1,0 +1,36 @@
+plugins {
+    id 'java'
+    id 'nebula.release' version '4.2.0'
+    id 'org.sonarqube' version '2.4'
+    id 'ru.vyarus.quality' version '2.2.0'
+    id 'jacoco'
+    id "info.solidsoft.pitest" version "1.1.11"
+    id 'org.springframework.boot' version '1.5.3.RELEASE'
+}
+
+group 'uk.co.dajohnston'
+
+repositories {
+    jcenter()
+}
+
+dependencies {
+    testCompile 'junit:junit:4.12'
+}
+
+quality {
+    checkstyleVersion = '7.7'
+    pmdVersion = '5.6.1'
+}
+
+jacoco {
+    toolVersion = '0.7.9'
+}
+
+sonarqube {
+    properties {
+        property "sonar.exclusions", "**/Application.java"
+        property "sonar.tests", "src/test/java, src/integrationTest/java"
+        property "sonar.jacoco.reportPaths", "$buildDir/jacoco/test.exec, $buildDir/jacoco/integrationTest.exec"
+    }
+}
