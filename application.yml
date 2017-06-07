@@ -1,8 +1,10 @@
+server:
+  port: 8180
 security:
   oauth2:
     client:
-      client-id: dajohnston
-      client-secret: dajohnston-secret
+      client-id: my-app
+      client-secret: my-app-secret
       scope: read,write
       auto-approve-scopes: '.*'
 facebook:
