@@ -29,20 +29,20 @@ import org.springframework.web.filter.CompositeFilter;
 import uk.co.dajohnston.auth.config.OAuthConfig;
 
 @SpringBootApplication
-@EnableOAuth2Client
-@EnableAuthorizationServer
-@Order(SecurityProperties.ACCESS_OVERRIDE_ORDER)
+//@EnableOAuth2Client
+//@EnableAuthorizationServer
+//@Order(SecurityProperties.ACCESS_OVERRIDE_ORDER)
 @SuppressWarnings("PMD.UseUtilityClass")
-public class Application extends WebSecurityConfigurerAdapter {
+public class Application /*extends WebSecurityConfigurerAdapter*/ {
 
-    @Autowired
+    //@Autowired
     OAuth2ClientContext oauth2ClientContext;
 
     public static void main(String[] args) {
         SpringApplication.run(Application.class, args);
     }
 
-    @Override
+    //@Override
     protected void configure(HttpSecurity http) throws Exception {
         http.antMatcher("/**").authorizeRequests().antMatchers("/", "/login**", "/webjars/**").permitAll().anyRequest().authenticated()
                 .and().exceptionHandling().authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint("/")).and().logout()
@@ -90,7 +90,7 @@ public class Application extends WebSecurityConfigurerAdapter {
         return new OAuthConfig();
     }
 
-    @Bean
+    //@Bean
     public FilterRegistrationBean oauth2ClientFilterRegistration(OAuth2ClientContextFilter filter) {
         FilterRegistrationBean registration = new FilterRegistrationBean();
         registration.setFilter(filter);
@@ -98,8 +98,8 @@ public class Application extends WebSecurityConfigurerAdapter {
         return registration;
     }
 
-    @Configuration
-    @EnableResourceServer
+    //@Configuration
+    //@EnableResourceServer
     protected static class ResourceServerConfiguration extends ResourceServerConfigurerAdapter {
 
         @Override
