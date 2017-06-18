@@ -1,10 +1,9 @@
-package uk.co.dajohnston.auth.config;
+package uk.co.dajohnston.auth.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import java.io.IOException;
-import java.util.Collections;
 import java.util.Date;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -29,17 +28,16 @@ public class JWTLoginFilter extends AbstractAuthenticationProcessingFilter {
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
             throws AuthenticationException, IOException, ServletException {
         AccountCredentials credentials = new ObjectMapper().readValue(request.getInputStream(), AccountCredentials.class);
-        return getAuthenticationManager().authenticate(
-                new UsernamePasswordAuthenticationToken(credentials.getUsername(), credentials.getPassword(), Collections.emptyList()));
+        return getAuthenticationManager()
+                .authenticate(new UsernamePasswordAuthenticationToken(credentials.getEmailAddress(), credentials.getPassword()));
     }
 
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain,
             Authentication authResult) throws IOException, ServletException {
-        String JWT = Jwts.builder()
-                .setSubject(authResult.getName())
-                .setExpiration(new Date(System.currentTimeMillis() + 10000))
-                .signWith(SignatureAlgorithm.HS512, "ThisIsASecret")
+        boolean isAdmin = authResult.getAuthorities().stream().anyMatch(authority -> authority.getAuthority().equals("ROLE_ADMIN"));
+        String JWT = Jwts.builder().claim("name", authResult.getName()).claim("admin", isAdmin)
+                .setExpiration(new Date(System.currentTimeMillis() + 1000000)).signWith(SignatureAlgorithm.HS512, "ThisIsASecret")
                 .compact();
         response.addHeader("Authorization", "Bearer " + JWT);
     }
