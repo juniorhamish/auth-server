@@ -14,8 +14,8 @@ import uk.co.dajohnston.auth.repository.UserRepository;
 @Component
 public class UserValidator implements Validator {
 
-    private static final String EMAIL_ADDRESS_FIELD = "emailAddress";
-    private static final String PASSWORD_FIELD = "password";
+    private static final String FIELD_EMAIL_ADDRESS = "emailAddress";
+    private static final String FIELD_PASSWORD = "password";
     private static final String VALID_PASSWORD_REGEX = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=\\S+$).{8,}$";
     private UserRepository userRepository;
     private ResourceBundleMessageSource messageSource;
@@ -35,17 +35,17 @@ public class UserValidator implements Validator {
     public void validate(Object target, Errors errors) {
         User user = (User) target;
         ValidationUtils
-                .rejectIfEmptyOrWhitespace(errors, EMAIL_ADDRESS_FIELD, "Empty.user.emailAddress", "Email Address must be provided.");
+                .rejectIfEmptyOrWhitespace(errors, FIELD_EMAIL_ADDRESS, "Empty.user.emailAddress", "Email Address must be provided.");
         if (userRepository.findByEmailAddress(user.getEmailAddress()) != null) {
-            errors.rejectValue(EMAIL_ADDRESS_FIELD, "Duplicate.user.emailAddress", "The email address is already in use.");
+            errors.rejectValue(FIELD_EMAIL_ADDRESS, "Duplicate.user.emailAddress", "The email address is already in use.");
         }
         if (!EmailValidator.getInstance().isValid(user.getEmailAddress())) {
-            errors.rejectValue(EMAIL_ADDRESS_FIELD, "Invalid.user.emailAddress", "The email address is invalid.");
+            errors.rejectValue(FIELD_EMAIL_ADDRESS, "Invalid.user.emailAddress", "The email address is invalid.");
         }
 
-        ValidationUtils.rejectIfEmptyOrWhitespace(errors, PASSWORD_FIELD, "Empty.user.password", "Password must be provided.");
+        ValidationUtils.rejectIfEmptyOrWhitespace(errors, FIELD_PASSWORD, "Empty.user.password", "Password must be provided.");
         if (!user.getPassword().matches(VALID_PASSWORD_REGEX)) {
-            errors.rejectValue(PASSWORD_FIELD, "Invalid.user.password", "The password is not valid.");
+            errors.rejectValue(FIELD_PASSWORD, "Invalid.user.password", "The password is not valid.");
         }
 
         if (!user.getPasswordConfirm().equals(user.getPassword())) {

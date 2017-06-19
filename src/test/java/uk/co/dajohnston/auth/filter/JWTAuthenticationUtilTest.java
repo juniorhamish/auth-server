@@ -6,6 +6,7 @@ import static java.util.Collections.singletonList;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
+import static org.hamcrest.collection.IsIterableContainingInOrder.contains;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
@@ -30,6 +31,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 @RunWith(MockitoJUnitRunner.class)
 public class JWTAuthenticationUtilTest {
 
+    private static final String SIGNING_KEY = "Tn5UViRLPEgpI0hvbmZRbjpmTlY5RzJpJys+STxfImp7X203KGMsdCY5ZSpfYmNUTi0nQVUoVj9eZXw3SDNv";
     @Mock
     private Authentication authenticationResult;
     @Mock
@@ -93,7 +95,7 @@ public class JWTAuthenticationUtilTest {
 
     @Test
     public void authenticationShouldBeNullIfNameClaimIsNotSet() {
-        String jwt = Jwts.builder().claim("Foo", "Bar").signWith(SignatureAlgorithm.HS512, "ThisIsASecret").compact();
+        String jwt = Jwts.builder().claim("Foo", "Bar").signWith(SignatureAlgorithm.HS512, SIGNING_KEY).compact();
         Authentication authentication = jwtAuthenticationUtil.getAuthentication(jwt);
 
         assertThat(authentication, is(nullValue()));
@@ -101,9 +103,16 @@ public class JWTAuthenticationUtilTest {
 
     @Test
     public void authenticationShouldGetUserNameFromToken() {
-        String jwt = Jwts.builder().claim("name", "Dave").signWith(SignatureAlgorithm.HS512, "ThisIsASecret").compact();
+        String jwt = Jwts.builder().claim("name", "Dave").signWith(SignatureAlgorithm.HS512, SIGNING_KEY).compact();
         Authentication authentication = jwtAuthenticationUtil.getAuthentication(jwt);
         assertThat(authentication.getName(), is("Dave"));
+    }
+
+    @Test
+    public void authenticationShouldHoldGrantedAuthorityForTheRoleClaim() {
+        String jwt = Jwts.builder().claim("role", "ADMIN").claim("name", "Dave").signWith(SignatureAlgorithm.HS512, SIGNING_KEY).compact();
+        Authentication authentication = jwtAuthenticationUtil.getAuthentication(jwt);
+        assertThat(authentication.getAuthorities(), contains(new SimpleGrantedAuthority("ROLE_ADMIN")));
     }
 
     private <T> Matcher<String> hasClaim(String field, T value, Class<T> valueClass) {
@@ -125,7 +134,7 @@ public class JWTAuthenticationUtilTest {
             }
 
             private T getClaim(String token) {
-                Claims body = Jwts.parser().setSigningKey("ThisIsASecret").parseClaimsJws(token).getBody();
+                Claims body = Jwts.parser().setSigningKey(SIGNING_KEY).parseClaimsJws(token).getBody();
                 return body.get(field, valueClass);
             }
         };

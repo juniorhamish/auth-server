@@ -22,7 +22,7 @@ import org.springframework.stereotype.Component;
 public class JWTAuthenticationUtil {
 
     private static final long TOKEN_DURATION_IN_MS = MILLISECONDS.convert(7L, TimeUnit.DAYS);
-    private static final String SECRET_KEY = "ThisIsASecret";
+    private static final String SECRET_KEY = "Tn5UViRLPEgpI0hvbmZRbjpmTlY5RzJpJys+STxfImp7X203KGMsdCY5ZSpfYmNUTi0nQVUoVj9eZXw3SDNv";
 
     private Clock clock;
 

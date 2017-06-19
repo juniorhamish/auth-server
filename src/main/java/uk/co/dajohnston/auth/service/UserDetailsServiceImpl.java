@@ -30,7 +30,7 @@ public class UserDetailsServiceImpl implements UserDetailsService, UserService {
 
     @Override
     @Transactional(readOnly = true)
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+    public UserDetails loadUserByUsername(String username) {
         User user = userRepository.findByEmailAddress(username);
         if (user == null) {
             throw new UsernameNotFoundException("User with email address " + username + " does not exist");
