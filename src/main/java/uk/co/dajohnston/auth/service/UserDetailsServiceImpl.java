@@ -14,20 +14,17 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import uk.co.dajohnston.auth.model.Role;
 import uk.co.dajohnston.auth.model.User;
-import uk.co.dajohnston.auth.repository.RoleRepository;
 import uk.co.dajohnston.auth.repository.UserRepository;
 
 @Service
 public class UserDetailsServiceImpl implements UserDetailsService, UserService {
 
     private UserRepository userRepository;
-    private RoleRepository roleRepository;
     private BCryptPasswordEncoder passwordEncoder;
 
     @Autowired
-    public UserDetailsServiceImpl(UserRepository userRepository, RoleRepository roleRepository, BCryptPasswordEncoder passwordEncoder) {
+    public UserDetailsServiceImpl(UserRepository userRepository, BCryptPasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
-        this.roleRepository = roleRepository;
         this.passwordEncoder = passwordEncoder;
     }
 
@@ -40,16 +37,14 @@ public class UserDetailsServiceImpl implements UserDetailsService, UserService {
         }
 
         Set<GrantedAuthority> grantedAuthorities = new HashSet<>();
-        user.getRoles().forEach(role -> grantedAuthorities.add(new SimpleGrantedAuthority(role.getName())));
+        grantedAuthorities.add(new SimpleGrantedAuthority(user.getRole().name()));
         return new org.springframework.security.core.userdetails.User(user.getEmailAddress(), user.getPassword(), grantedAuthorities);
     }
 
     @Override
     public void save(User user) {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        Set<Role> roles = new HashSet<>();
-        roles.add(roleRepository.findByName("USER"));
-        user.setRoles(roles);
+        user.setRole(Role.ADMIN);
         userRepository.save(user);
     }
 

@@ -18,10 +18,11 @@ dependencies {
     compile 'org.springframework.boot:spring-boot-starter-security'
     compile 'org.springframework.boot:spring-boot-starter-web'
     compile 'org.springframework.boot:spring-boot-starter-data-jpa'
-    runtime 'com.h2database:h2'
     compile 'io.jsonwebtoken:jjwt:0.7.0'
     compile 'commons-validator:commons-validator:1.6'
+    runtime 'com.h2database:h2'
     testCompile 'junit:junit:4.12'
+    testCompile "org.mockito:mockito-core:2.+"
 }
 
 quality {

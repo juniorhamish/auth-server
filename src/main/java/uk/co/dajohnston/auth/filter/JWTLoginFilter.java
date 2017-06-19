@@ -1,10 +1,7 @@
 package uk.co.dajohnston.auth.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
 import java.io.IOException;
-import java.util.Date;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -19,8 +16,11 @@ import uk.co.dajohnston.auth.model.AccountCredentials;
 
 public class JWTLoginFilter extends AbstractAuthenticationProcessingFilter {
 
-    public JWTLoginFilter(String url, AuthenticationManager authenticationManager) {
+    private JWTAuthenticationUtil jwtAuthenticationUtil;
+
+    public JWTLoginFilter(String url, AuthenticationManager authenticationManager, JWTAuthenticationUtil jwtAuthenticationUtil) {
         super(new AntPathRequestMatcher(url));
+        this.jwtAuthenticationUtil = jwtAuthenticationUtil;
         setAuthenticationManager(authenticationManager);
     }
 
@@ -35,10 +35,7 @@ public class JWTLoginFilter extends AbstractAuthenticationProcessingFilter {
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain,
             Authentication authResult) throws IOException, ServletException {
-        boolean isAdmin = authResult.getAuthorities().stream().anyMatch(authority -> authority.getAuthority().equals("ROLE_ADMIN"));
-        String JWT = Jwts.builder().claim("name", authResult.getName()).claim("admin", isAdmin)
-                .setExpiration(new Date(System.currentTimeMillis() + 1000000)).signWith(SignatureAlgorithm.HS512, "ThisIsASecret")
-                .compact();
-        response.addHeader("Authorization", "Bearer " + JWT);
+        String token = jwtAuthenticationUtil.getToken(authResult);
+        response.addHeader("Authorization", "Bearer " + token);
     }
 }
