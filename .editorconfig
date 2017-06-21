@@ -1,0 +1,13 @@
+root = true
+
+[*]
+charset = utf-8
+trim_trailing_whitespace = true
+
+[*.{java,gradle}]
+indent_style = space
+tab_width = 4
+
+[*.js]
+indent_style = space
+indent_size = 2
