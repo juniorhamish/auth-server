@@ -1,5 +1,7 @@
 package uk.co.dajohnston.auth.filter;
 
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
+
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -15,8 +17,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
-
-import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
 @Component
 public class JsonWebTokenAuthenticationUtil {
