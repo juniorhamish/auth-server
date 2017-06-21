@@ -13,28 +13,29 @@ import org.springframework.security.web.authentication.AbstractAuthenticationPro
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import uk.co.dajohnston.auth.model.AccountCredentials;
 
-public class JWTLoginFilter extends AbstractAuthenticationProcessingFilter {
+public class JsonWebTokenLoginFilter extends AbstractAuthenticationProcessingFilter {
 
-    private JWTAuthenticationUtil jwtAuthenticationUtil;
+    private final JsonWebTokenAuthenticationUtil jsonWebTokenAuthenticationUtil;
 
-    public JWTLoginFilter(String url, AuthenticationManager authenticationManager, JWTAuthenticationUtil jwtAuthenticationUtil) {
+    public JsonWebTokenLoginFilter(String url, AuthenticationManager authenticationManager, JsonWebTokenAuthenticationUtil
+            jsonWebTokenAuthenticationUtil) {
         super(new AntPathRequestMatcher(url));
-        this.jwtAuthenticationUtil = jwtAuthenticationUtil;
+        this.jsonWebTokenAuthenticationUtil = jsonWebTokenAuthenticationUtil;
         setAuthenticationManager(authenticationManager);
     }
 
     @Override
-    public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
-            throws IOException, ServletException {
+    public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws IOException,
+            ServletException {
         AccountCredentials credentials = new ObjectMapper().readValue(request.getInputStream(), AccountCredentials.class);
-        return getAuthenticationManager()
-                .authenticate(new UsernamePasswordAuthenticationToken(credentials.getEmailAddress(), credentials.getPassword()));
+        return getAuthenticationManager().authenticate(new UsernamePasswordAuthenticationToken(credentials.getEmailAddress(), credentials
+                .getPassword()));
     }
 
     @Override
-    protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain,
-            Authentication authResult) throws IOException, ServletException {
-        String token = jwtAuthenticationUtil.getToken(authResult);
+    protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication
+            authResult) throws IOException, ServletException {
+        String token = jsonWebTokenAuthenticationUtil.getToken(authResult);
         response.addHeader("Authorization", "Bearer " + token);
     }
 }

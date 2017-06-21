@@ -19,8 +19,8 @@ import uk.co.dajohnston.auth.repository.UserRepository;
 @Service
 public class UserDetailsServiceImpl implements UserDetailsService, UserService {
 
-    private UserRepository userRepository;
-    private BCryptPasswordEncoder passwordEncoder;
+    private final UserRepository userRepository;
+    private final BCryptPasswordEncoder passwordEncoder;
 
     @Autowired
     public UserDetailsServiceImpl(UserRepository userRepository, BCryptPasswordEncoder passwordEncoder) {

@@ -15,8 +15,8 @@ import uk.co.dajohnston.auth.validator.UserValidator;
 @RestController
 public class UserController {
 
-    private UserService userService;
-    private UserValidator userValidator;
+    private final UserService userService;
+    private final UserValidator userValidator;
 
     @Autowired
     public UserController(UserService userService, UserValidator userValidator) {

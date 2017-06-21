@@ -10,12 +10,12 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.GenericFilterBean;
 
-public class JWTAuthenticationFilter extends GenericFilterBean {
+public class JsonWebTokenAuthenticationFilter extends GenericFilterBean {
 
-    private JWTAuthenticationUtil jwtAuthenticationUtil;
+    private final JsonWebTokenAuthenticationUtil jsonWebTokenAuthenticationUtil;
 
-    public JWTAuthenticationFilter(JWTAuthenticationUtil jwtAuthenticationUtil) {
-        this.jwtAuthenticationUtil = jwtAuthenticationUtil;
+    public JsonWebTokenAuthenticationFilter(JsonWebTokenAuthenticationUtil jsonWebTokenAuthenticationUtil) {
+        this.jsonWebTokenAuthenticationUtil = jsonWebTokenAuthenticationUtil;
     }
 
     @Override
@@ -29,7 +29,7 @@ public class JWTAuthenticationFilter extends GenericFilterBean {
     private Authentication getAuthentication(HttpServletRequest request) {
         String authHeader = request.getHeader("Authorization");
         if (authHeader != null) {
-            return jwtAuthenticationUtil.getAuthentication(authHeader.replace("Bearer ", ""));
+            return jsonWebTokenAuthenticationUtil.getAuthentication(authHeader.replace("Bearer ", ""));
         }
         return null;
     }

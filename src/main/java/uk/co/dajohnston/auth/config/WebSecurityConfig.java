@@ -10,33 +10,33 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import uk.co.dajohnston.auth.filter.JWTAuthenticationFilter;
-import uk.co.dajohnston.auth.filter.JWTAuthenticationUtil;
-import uk.co.dajohnston.auth.filter.JWTLoginFilter;
+import uk.co.dajohnston.auth.filter.JsonWebTokenAuthenticationFilter;
+import uk.co.dajohnston.auth.filter.JsonWebTokenAuthenticationUtil;
+import uk.co.dajohnston.auth.filter.JsonWebTokenLoginFilter;
 import uk.co.dajohnston.auth.model.Role;
 
 @Configuration
 @EnableWebSecurity
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
-    private UserDetailsService userDetailsService;
-    private BCryptPasswordEncoder passwordEncoder;
-    private JWTAuthenticationUtil jwtAuthenticationUtil;
+    private final UserDetailsService userDetailsService;
+    private final BCryptPasswordEncoder passwordEncoder;
+    private final JsonWebTokenAuthenticationUtil jsonWebTokenAuthenticationUtil;
 
     @Autowired
-    public WebSecurityConfig(UserDetailsService userDetailsService, BCryptPasswordEncoder passwordEncoder,
-            JWTAuthenticationUtil jwtAuthenticationUtil) {
+    public WebSecurityConfig(UserDetailsService userDetailsService, BCryptPasswordEncoder passwordEncoder, JsonWebTokenAuthenticationUtil
+            jsonWebTokenAuthenticationUtil) {
         this.userDetailsService = userDetailsService;
         this.passwordEncoder = passwordEncoder;
-        this.jwtAuthenticationUtil = jwtAuthenticationUtil;
+        this.jsonWebTokenAuthenticationUtil = jsonWebTokenAuthenticationUtil;
     }
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.csrf().disable().authorizeRequests().antMatchers(HttpMethod.POST, "/login", "/signup").permitAll().antMatchers("/users")
-                .hasRole(Role.ADMIN.name()).anyRequest().authenticated().and()
-                .addFilterBefore(new JWTLoginFilter("/login", authenticationManager(), jwtAuthenticationUtil), UsernamePasswordAuthenticationFilter.class)
-                .addFilterBefore(new JWTAuthenticationFilter(jwtAuthenticationUtil), UsernamePasswordAuthenticationFilter.class);
+                .hasRole(Role.ADMIN.name()).anyRequest().authenticated().and().addFilterBefore(new JsonWebTokenLoginFilter("/login",
+                authenticationManager(), jsonWebTokenAuthenticationUtil), UsernamePasswordAuthenticationFilter.class).addFilterBefore(new
+                JsonWebTokenAuthenticationFilter(jsonWebTokenAuthenticationUtil), UsernamePasswordAuthenticationFilter.class);
     }
 
     @Override

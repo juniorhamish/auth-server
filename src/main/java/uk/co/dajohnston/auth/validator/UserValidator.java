@@ -17,8 +17,8 @@ public class UserValidator implements Validator {
     private static final String EMAIL_ADDRESS_FIELD = "emailAddress";
     private static final String PASSWORD_FIELD = "password";
     private static final String VALID_PASSWORD_REGEX = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=\\S+$).{8,}$";
-    private UserRepository userRepository;
-    private ResourceBundleMessageSource messageSource;
+    private final UserRepository userRepository;
+    private final ResourceBundleMessageSource messageSource;
 
     @Autowired
     public UserValidator(UserRepository userRepository, ResourceBundleMessageSource messageSource) {

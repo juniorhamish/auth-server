@@ -1,10 +1,5 @@
 package uk.co.dajohnston.auth.controller;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.Before;
@@ -15,12 +10,17 @@ import org.junit.runner.RunWith;
 import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.validation.BindingResult;
 import uk.co.dajohnston.auth.exception.SignupException;
 import uk.co.dajohnston.auth.model.User;
 import uk.co.dajohnston.auth.service.UserService;
 import uk.co.dajohnston.auth.validator.UserValidator;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class UserControllerTest {

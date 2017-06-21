@@ -6,5 +6,6 @@ import uk.co.dajohnston.auth.model.User;
 public interface UserService {
 
     void save(User user);
+
     List<User> getAllUsers();
 }

@@ -1,8 +1,5 @@
 package uk.co.dajohnston.auth.filter;
 
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
 import java.io.IOException;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -14,13 +11,16 @@ import org.junit.runner.RunWith;
 import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 @RunWith(MockitoJUnitRunner.class)
-public class JWTAuthenticationFilterTest {
+public class JsonWebTokenAuthenticationFilterTest {
 
     @Mock
     private HttpServletRequest servletRequest;
@@ -29,24 +29,24 @@ public class JWTAuthenticationFilterTest {
     @Mock
     private SecurityContext securityContext;
     @Mock
-    private JWTAuthenticationUtil jwtAuthenticationUtil;
+    private JsonWebTokenAuthenticationUtil jsonWebTokenAuthenticationUtil;
     @Mock
     private Authentication authentication;
     @Mock
     private ServletResponse servletResponse;
-    private JWTAuthenticationFilter jwtAuthenticationFilter;
+    private JsonWebTokenAuthenticationFilter jsonWebTokenAuthenticationFilter;
 
     @Before
     public void setUp() {
         SecurityContextHolder.setContext(securityContext);
-        jwtAuthenticationFilter = new JWTAuthenticationFilter(jwtAuthenticationUtil);
+        jsonWebTokenAuthenticationFilter = new JsonWebTokenAuthenticationFilter(jsonWebTokenAuthenticationUtil);
     }
 
     @Test
     public void shouldSetAuthenticationToNullIfHeaderIsNotPresent() throws IOException, ServletException {
         when(servletRequest.getHeader("Authorization")).thenReturn(null);
 
-        jwtAuthenticationFilter.doFilter(servletRequest, null, filterChain);
+        jsonWebTokenAuthenticationFilter.doFilter(servletRequest, null, filterChain);
 
         verify(securityContext).setAuthentication(null);
     }
@@ -54,9 +54,9 @@ public class JWTAuthenticationFilterTest {
     @Test
     public void shouldExtractTokenFromHeaderToGetAuthentication() throws IOException, ServletException {
         when(servletRequest.getHeader("Authorization")).thenReturn("Bearer Blah");
-        when(jwtAuthenticationUtil.getAuthentication("Blah")).thenReturn(authentication);
+        when(jsonWebTokenAuthenticationUtil.getAuthentication("Blah")).thenReturn(authentication);
 
-        jwtAuthenticationFilter.doFilter(servletRequest, null, filterChain);
+        jsonWebTokenAuthenticationFilter.doFilter(servletRequest, null, filterChain);
 
         verify(securityContext).setAuthentication(authentication);
     }
@@ -64,9 +64,9 @@ public class JWTAuthenticationFilterTest {
     @Test
     public void shouldCallTheFilterChainAfterSettingTheAuthenticationInTheSecurityContext() throws IOException, ServletException {
         when(servletRequest.getHeader("Authorization")).thenReturn("Bearer Blah");
-        when(jwtAuthenticationUtil.getAuthentication("Blah")).thenReturn(authentication);
+        when(jsonWebTokenAuthenticationUtil.getAuthentication("Blah")).thenReturn(authentication);
 
-        jwtAuthenticationFilter.doFilter(servletRequest, servletResponse, filterChain);
+        jsonWebTokenAuthenticationFilter.doFilter(servletRequest, servletResponse, filterChain);
 
         InOrder inOrder = Mockito.inOrder(securityContext, filterChain);
         inOrder.verify(securityContext).setAuthentication(authentication);

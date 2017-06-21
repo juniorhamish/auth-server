@@ -1,12 +1,5 @@
 package uk.co.dajohnston.auth.filter;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -20,16 +13,20 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.*;
+
 @RunWith(MockitoJUnitRunner.class)
-public class JWTLoginFilterTest {
+public class JsonWebTokenLoginFilterTest {
 
     @Mock
-    private JWTAuthenticationUtil authenticationUtil;
+    private JsonWebTokenAuthenticationUtil authenticationUtil;
     @Mock
     private AuthenticationManager authenticationManager;
     @Mock
@@ -38,18 +35,18 @@ public class JWTLoginFilterTest {
     private HttpServletResponse response;
     @Mock
     private HttpServletRequest request;
-    private JWTLoginFilter jwtLoginFilter;
+    private JsonWebTokenLoginFilter jsonWebTokenLoginFilter;
 
     @Before
     public void setUp() throws Exception {
-        jwtLoginFilter = new JWTLoginFilter("url", authenticationManager, authenticationUtil);
+        jsonWebTokenLoginFilter = new JsonWebTokenLoginFilter("url", authenticationManager, authenticationUtil);
         request = mock(HttpServletRequest.class);
     }
 
     @Test
     public void successfulAuthenticationShouldAddHeaderToResponse() throws IOException, ServletException {
         when(authenticationUtil.getToken(authentication)).thenReturn("Token");
-        jwtLoginFilter.successfulAuthentication(request, response, null, authentication);
+        jsonWebTokenLoginFilter.successfulAuthentication(request, response, null, authentication);
         verify(response).addHeader("Authorization", "Bearer Token");
     }
 
@@ -60,7 +57,7 @@ public class JWTLoginFilterTest {
         when(authenticationManager.authenticate(authentication)).thenReturn(authentication);
         when(request.getInputStream())
                 .thenReturn(new MockServletInputStream("{\"emailAddress\":\"dave@test.com\",\"password\":\"password\"}"));
-        Authentication authenticationResult = jwtLoginFilter.attemptAuthentication(request, response);
+        Authentication authenticationResult = jsonWebTokenLoginFilter.attemptAuthentication(request, response);
 
         assertThat(authenticationResult, is(authentication));
     }

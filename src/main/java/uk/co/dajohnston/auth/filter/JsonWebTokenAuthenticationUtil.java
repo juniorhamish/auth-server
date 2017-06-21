@@ -1,7 +1,5 @@
 package uk.co.dajohnston.auth.filter;
 
-import static java.util.concurrent.TimeUnit.MILLISECONDS;
-
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -18,20 +16,22 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
 
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
+
 @Component
-public class JWTAuthenticationUtil {
+public class JsonWebTokenAuthenticationUtil {
 
     private static final long TOKEN_DURATION_IN_MS = MILLISECONDS.convert(7L, TimeUnit.DAYS);
     private static final String SECRET_KEY = "Tn5UViRLPEgpI0hvbmZRbjpmTlY5RzJpJys+STxfImp7X203KGMsdCY5ZSpfYmNUTi0nQVUoVj9eZXw3SDNv";
 
-    private Clock clock;
+    private final Clock clock;
 
     @Autowired
-    public JWTAuthenticationUtil(Clock clock) {
+    public JsonWebTokenAuthenticationUtil(Clock clock) {
         this.clock = clock;
     }
 
-    String getToken(Authentication authenticationResult) {
+    public String getToken(Authentication authenticationResult) {
         Optional<String> roleValue = authenticationResult.getAuthorities().stream().map(GrantedAuthority::getAuthority).findFirst();
         String role = null;
         if (roleValue.isPresent()) {
@@ -41,7 +41,7 @@ public class JWTAuthenticationUtil {
                 .setExpiration(new Date(clock.millis() + TOKEN_DURATION_IN_MS)).signWith(SignatureAlgorithm.HS512, SECRET_KEY).compact();
     }
 
-    Authentication getAuthentication(String token) {
+    public Authentication getAuthentication(String token) {
         Authentication result = null;
         if (token != null) {
             Claims body = Jwts.parser().setSigningKey(SECRET_KEY).parseClaimsJws(token).getBody();
