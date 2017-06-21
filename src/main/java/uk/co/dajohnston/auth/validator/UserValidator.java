@@ -44,11 +44,11 @@ public class UserValidator implements Validator {
         }
 
         ValidationUtils.rejectIfEmptyOrWhitespace(errors, PASSWORD_FIELD, "Empty.user.password", "Password must be provided.");
-        if (!user.getPassword().matches(VALID_PASSWORD_REGEX)) {
+        if (user.getPassword() != null && !user.getPassword().matches(VALID_PASSWORD_REGEX)) {
             errors.rejectValue(PASSWORD_FIELD, "Invalid.user.password", "The password is not valid.");
         }
 
-        if (!user.getPasswordConfirm().equals(user.getPassword())) {
+        if (user.getPasswordConfirm() == null || !user.getPasswordConfirm().equals(user.getPassword())) {
             errors.rejectValue("passwordConfirm", "Diff.user.passwordConfirm", "The passwords do not match.");
         }
 
