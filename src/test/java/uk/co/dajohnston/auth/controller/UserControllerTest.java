@@ -2,6 +2,7 @@ package uk.co.dajohnston.auth.controller;
 
 import java.util.ArrayList;
 import java.util.List;
+import javax.servlet.http.HttpServletResponse;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -11,8 +12,10 @@ import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.validation.BindingResult;
-import uk.co.dajohnston.auth.exception.SignupException;
+import uk.co.dajohnston.auth.exception.SignUpException;
+import uk.co.dajohnston.auth.filter.JsonWebTokenAuthenticationUtil;
 import uk.co.dajohnston.auth.model.User;
 import uk.co.dajohnston.auth.service.UserService;
 import uk.co.dajohnston.auth.validator.UserValidator;
@@ -33,12 +36,18 @@ public class UserControllerTest {
     private UserValidator userValidator;
     @Mock
     private BindingResult bindingResult;
+    @Mock
+    private AuthenticationManager authenticationManager;
+    @Mock
+    private JsonWebTokenAuthenticationUtil jsonWebTokenAuthenticationUtil;
+    @Mock
+    private HttpServletResponse httpServletResponse;
     private UserController userController;
     private final User user = new User();
 
     @Before
     public void setUp() throws Exception {
-        userController = new UserController(userService, userValidator);
+        userController = new UserController(userService, userValidator, authenticationManager, jsonWebTokenAuthenticationUtil);
     }
 
     @Test
@@ -54,7 +63,7 @@ public class UserControllerTest {
     public void shouldSaveUserIfValidationSucceeds() {
         when(bindingResult.hasErrors()).thenReturn(false);
 
-        userController.registration(user, bindingResult);
+        userController.registration(user, bindingResult, httpServletResponse);
 
         verify(userService).save(user);
     }
@@ -62,22 +71,19 @@ public class UserControllerTest {
     @Test
     public void shouldThrowExceptionIfValidationFails() {
         when(bindingResult.hasErrors()).thenReturn(true);
-        when(userValidator.getErrorMessage(bindingResult)).thenReturn("This is the error");
 
-        exception.expect(SignupException.class);
-        exception.expectMessage(is("This is the error"));
+        exception.expect(SignUpException.class);
 
-        userController.registration(user, bindingResult);
+        userController.registration(user, bindingResult, httpServletResponse);
     }
 
     @Test
     public void shouldValidateThenCheckForErrors() {
-        userController.registration(user, bindingResult);
+        userController.registration(user, bindingResult, httpServletResponse);
 
         InOrder inOrder = Mockito.inOrder(userValidator, bindingResult);
         inOrder.verify(userValidator).validate(user, bindingResult);
         inOrder.verify(bindingResult).hasErrors();
-
     }
 
 }

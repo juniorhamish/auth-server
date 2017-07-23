@@ -2,10 +2,8 @@ package uk.co.dajohnston.auth.validator;
 
 import org.apache.commons.validator.routines.EmailValidator;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
-import org.springframework.validation.FieldError;
 import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
 import uk.co.dajohnston.auth.model.User;
@@ -18,12 +16,10 @@ public class UserValidator implements Validator {
     private static final String PASSWORD_FIELD = "password";
     private static final String VALID_PASSWORD_REGEX = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=\\S+$).{8,}$";
     private final UserRepository userRepository;
-    private final ResourceBundleMessageSource messageSource;
 
     @Autowired
-    public UserValidator(UserRepository userRepository, ResourceBundleMessageSource messageSource) {
+    public UserValidator(UserRepository userRepository) {
         this.userRepository = userRepository;
-        this.messageSource = messageSource;
     }
 
     @Override
@@ -54,14 +50,5 @@ public class UserValidator implements Validator {
 
         ValidationUtils.rejectIfEmptyOrWhitespace(errors, "firstName", "Empty.user.firstName", "First name must be provided.");
         ValidationUtils.rejectIfEmptyOrWhitespace(errors, "lastName", "Empty.user.lastName", "Last name must be provided.");
-    }
-
-    public String getErrorMessage(Errors errors) {
-        StringBuilder errorMessage = new StringBuilder();
-        for (FieldError error : errors.getFieldErrors()) {
-            errorMessage.append(error.getField()).append(" : ").append(messageSource.getMessage(error, null))
-                    .append(System.lineSeparator());
-        }
-        return errorMessage.toString();
     }
 }

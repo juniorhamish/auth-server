@@ -7,6 +7,7 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -24,8 +25,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     private final JsonWebTokenAuthenticationUtil jsonWebTokenAuthenticationUtil;
 
     @Autowired
-    public WebSecurityConfig(UserDetailsService userDetailsService, BCryptPasswordEncoder passwordEncoder, JsonWebTokenAuthenticationUtil
-            jsonWebTokenAuthenticationUtil) {
+    public WebSecurityConfig(UserDetailsService userDetailsService, BCryptPasswordEncoder passwordEncoder,
+            JsonWebTokenAuthenticationUtil jsonWebTokenAuthenticationUtil) {
         this.userDetailsService = userDetailsService;
         this.passwordEncoder = passwordEncoder;
         this.jsonWebTokenAuthenticationUtil = jsonWebTokenAuthenticationUtil;
@@ -33,10 +34,14 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.csrf().disable().authorizeRequests().antMatchers(HttpMethod.POST, "/login", "/signup").permitAll().antMatchers("/users")
-                .hasRole(Role.ADMIN.name()).anyRequest().authenticated().and().addFilterBefore(new JsonWebTokenLoginFilter("/login",
-                authenticationManager(), jsonWebTokenAuthenticationUtil), UsernamePasswordAuthenticationFilter.class).addFilterBefore(new
-                JsonWebTokenAuthenticationFilter(jsonWebTokenAuthenticationUtil), UsernamePasswordAuthenticationFilter.class);
+        http.csrf().disable().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and().authorizeRequests()
+                .antMatchers(HttpMethod.POST, "/login", "/signup").permitAll().antMatchers("/users").hasRole(Role.ADMIN.name()).anyRequest()
+                .authenticated();
+        http.addFilterBefore(new JsonWebTokenLoginFilter("/login", authenticationManager(), jsonWebTokenAuthenticationUtil),
+                UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(new JsonWebTokenAuthenticationFilter(jsonWebTokenAuthenticationUtil),
+                UsernamePasswordAuthenticationFilter.class);
+        http.headers().cacheControl();
     }
 
     @Override

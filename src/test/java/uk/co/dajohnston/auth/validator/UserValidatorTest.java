@@ -12,7 +12,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.validation.DirectFieldBindingResult;
 import org.springframework.validation.Errors;
 import uk.co.dajohnston.auth.model.User;
@@ -23,15 +22,13 @@ public class UserValidatorTest {
 
     @Mock
     private UserRepository userRepository;
-    private ResourceBundleMessageSource messageSource;
     private UserValidator userValidator;
     private User user;
     private Errors errors;
 
     @Before
     public void setUp() throws Exception {
-        messageSource = new ResourceBundleMessageSource();
-        userValidator = new UserValidator(userRepository, messageSource);
+        userValidator = new UserValidator(userRepository);
         user = new User();
         errors = new DirectFieldBindingResult(user, "user");
     }
@@ -169,22 +166,6 @@ public class UserValidatorTest {
         userValidator.validate(user, errors);
 
         assertThat(errors.getAllErrors(), is(empty()));
-    }
-
-    @Test
-    public void errorMessageShouldBeEmptyIfThereAreNoErrors() {
-        String errorMessage = userValidator.getErrorMessage(errors);
-        assertThat(errorMessage, is(""));
-    }
-
-    @Test
-    public void errorMessageShouldContainEachFieldErrorOnANewLine() {
-        errors.rejectValue("emailAddress", "Error.one", "Default message one");
-        errors.rejectValue("password", "Error.two", "Default message two");
-
-        String errorMessage = userValidator.getErrorMessage(errors);
-
-        assertThat(errorMessage, is("emailAddress : Default message one\npassword : Default message two\n"));
     }
 
 }
