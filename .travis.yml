@@ -2,7 +2,7 @@ language: java
 sudo: false
 install: true
 addons:
-  sonarqube:
+  sonarcloud:
     organization: juniorhamish-github
     token:
       secure: R8w6tOFAs3ZCQghN8N7Yn2oUZseRPTs9OKun8WIVtO+dPQNCyYjS7dnp/9hq1T6T3vXP9cmMzbQsNF5uDHSb4AiOVRbqj7AoZPQY7rkxaaK0vX0nCL71vH6ypcGud/Hf+v/HhOQ1zvO2Af3wUfcDUpUuohbrytHdkHySsPRTs7mZmOm9Lpi7QfN49lWaDt9capu9byxK2y+smty51qNltzNhlVGyoE+vENOImrpMBe+4jsYaDtGyAN74YVcZFmOlKy5lQ0g5qv3Kt/y819tDMrizeQ1Cx+h5VXCGDvszYxTHovsmOuJmCcwJMgVpQYZPOcoEBwvj5472Fl+hN8ZehYqcgxn3wFshjQBShaYwyk/7OCdoKjzu3UYdmmFm2qfWNXigHl2En9XzBF2n5UERbde7rl0FvITZDzocyXEZvulOOTI9knVkhCFp6appNVntKkDX4YRIoFe4WNB0Vk+/Wwlj5973+68HHs71oTkV1gJCKAFZxVnySJKW0ZjDUE2f9VD3fWfwgFWk8KqFna916TfxyfyjFGxwgq7lR13zazemEAJlzlWGFfmEwx4PD5NWBmM1faFQMsg+qqEYw5OiRC19w+5+PDvGZPUA1mE1wcBgJCqISyvLRYkEZo/3/3v86nnjRtbrkALb9eB659dI5G/n16hjkEg7z/TH2cP90ho=
