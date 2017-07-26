@@ -1,10 +1,8 @@
 package auth.steps;
 
-import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-import cucumber.api.java.en.And;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 import io.jsonwebtoken.Claims;
@@ -51,8 +49,8 @@ public class UserSteps {
         data.put("firstName", "Dave");
         data.put("lastName", "Johnston");
         data.put("emailAddress", user.get(0).getEmailAddress());
-        data.put("password", "Password1");
-        data.put("passwordConfirm", "Password1");
+        data.put("password", "Password2");
+        data.put("passwordConfirm", "Password2");
         response = restSteps.executePost("/signup", data);
     }
 }

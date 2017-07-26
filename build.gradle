@@ -81,7 +81,7 @@ check.dependsOn jacocoTestReport
 sonarqube {
     properties {
         property "sonar.exclusions", "**/Application.java"
-        property "sonar.tests", "src/test/java"
-        property "sonar.jacoco.reportPaths", "$buildDir/jacoco/test.exec,$buildDir/jacoco/integrationTest.exec"
+        property "sonar.tests", "src/test/java, src/integrationTest/java"
+        property "sonar.jacoco.reportPaths", "$buildDir/jacoco/test.exec, $buildDir/jacoco/integrationTest.exec"
     }
 }
