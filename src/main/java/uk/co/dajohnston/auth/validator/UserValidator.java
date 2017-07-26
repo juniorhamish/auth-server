@@ -32,11 +32,13 @@ public class UserValidator implements Validator {
         User user = (User) target;
         ValidationUtils
                 .rejectIfEmptyOrWhitespace(errors, EMAIL_ADDRESS_FIELD, "Empty.user.emailAddress", "Email Address must be provided.");
-        if (userRepository.findByEmailAddress(user.getEmailAddress()) != null) {
-            errors.rejectValue(EMAIL_ADDRESS_FIELD, "Duplicate.user.emailAddress", "The email address is already in use.");
-        }
-        if (!EmailValidator.getInstance().isValid(user.getEmailAddress())) {
-            errors.rejectValue(EMAIL_ADDRESS_FIELD, "Invalid.user.emailAddress", "The email address is invalid.");
+        if (user.getEmailAddress() != null) {
+            if (userRepository.findByEmailAddress(user.getEmailAddress()) != null) {
+                errors.rejectValue(EMAIL_ADDRESS_FIELD, "Duplicate.user.emailAddress", "The email address is already in use.");
+            }
+            if (!EmailValidator.getInstance().isValid(user.getEmailAddress())) {
+                errors.rejectValue(EMAIL_ADDRESS_FIELD, "Invalid.user.emailAddress", "The email address is invalid.");
+            }
         }
 
         ValidationUtils.rejectIfEmptyOrWhitespace(errors, PASSWORD_FIELD, "Empty.user.password", "Password must be provided.");

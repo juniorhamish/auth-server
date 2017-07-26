@@ -1,11 +1,13 @@
 package auth.steps;
 
-import static auth.steps.matchers.ServiceMatchers.fieldValidation;
+import static auth.steps.matchers.ServiceMatchers.fieldError;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.junit.Assert.assertThat;
 
+import auth.steps.matchers.FieldValidationMatcher;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
@@ -17,7 +19,10 @@ import io.restassured.config.ObjectMapperConfig;
 import io.restassured.config.RestAssuredConfig;
 import io.restassured.mapper.factory.Jackson2ObjectMapperFactory;
 import io.restassured.response.Response;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
+import org.hamcrest.Matcher;
 import org.springframework.boot.context.embedded.LocalServerPort;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
@@ -25,6 +30,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import uk.co.dajohnston.auth.Application;
 import uk.co.dajohnston.auth.model.ErrorResponse;
+import uk.co.dajohnston.auth.model.FieldValidation;
 
 @ContextConfiguration(classes = Application.class)
 @ActiveProfiles(profiles = "test")
@@ -60,10 +66,15 @@ public class RestSteps {
         assertThat(response.statusCode(), is(expectedResponseCode));
     }
 
-    @And("^the response has error \"([^\"]*)\"$")
-    public void validateErrorInResponse(String errorMessage) {
+    @And("^the response contains error:$")
+    public void theResponseContainsError(List<FieldValidation> fieldErrors) {
         ErrorResponse errorResponse = response.as(ErrorResponse.class);
-        assertThat(errorResponse.getFieldErrors(), hasItem(fieldValidation("emailAddress", errorMessage)));
+        assertThat(errorResponse.getFieldErrors(), containsInAnyOrder(fieldErrors(fieldErrors)));
     }
 
+    private FieldValidationMatcher[] fieldErrors(List<FieldValidation> fieldErrors) {
+        FieldValidationMatcher[] matchers = new FieldValidationMatcher[fieldErrors.size()];
+        Arrays.setAll(matchers, i -> new FieldValidationMatcher(fieldErrors.get(i).getField(), fieldErrors.get(i).getMessage()));
+        return matchers;
+    }
 }

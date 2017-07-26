@@ -8,6 +8,7 @@ import cucumber.api.java.en.When;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.restassured.response.Response;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,13 +25,13 @@ public class UserSteps {
 
     @When("^I register a new user$")
     public void createNewUser() {
-        Map<String, String> user = new HashMap<>();
-        user.put("firstName", "Dave");
-        user.put("lastName", "Johnston");
-        user.put("emailAddress", "dave@test.com");
-        user.put("password", "Password1");
-        user.put("passwordConfirm", "Password1");
-        response = restSteps.executePost("/signup", user);
+        User user = new User();
+        user.setFirstName("Dave");
+        user.setLastName("Johnston");
+        user.setEmailAddress("dave@test.com");
+        user.setPasswordConfirm("Password1");
+        user.setPassword("Password1");
+        registerUser(Collections.singletonList(user));
     }
 
     @Then("^the user should have the \"([^\"]*)\" role$")
@@ -44,13 +45,14 @@ public class UserSteps {
     }
 
     @When("^I register user:$")
-    public void registerUser(List<User> user) {
+    public void registerUser(List<User> users) {
+        User user = users.get(0);
         Map<String, String> data = new HashMap<>();
         data.put("firstName", "Dave");
         data.put("lastName", "Johnston");
-        data.put("emailAddress", user.get(0).getEmailAddress());
-        data.put("password", "Password2");
-        data.put("passwordConfirm", "Password2");
+        data.put("emailAddress", user.getEmailAddress().isEmpty() ? null : user.getEmailAddress());
+        data.put("password", user.getPassword());
+        data.put("passwordConfirm", user.getPasswordConfirm());
         response = restSteps.executePost("/signup", data);
     }
 }
