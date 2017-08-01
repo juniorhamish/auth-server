@@ -48,8 +48,8 @@ public class UserSteps {
     public void registerUser(List<User> users) {
         User user = users.get(0);
         Map<String, String> data = new HashMap<>();
-        data.put("firstName", "Dave");
-        data.put("lastName", "Johnston");
+        data.put("firstName", user.getFirstName());
+        data.put("lastName", user.getLastName());
         data.put("emailAddress", user.getEmailAddress().isEmpty() ? null : user.getEmailAddress());
         data.put("password", user.getPassword());
         data.put("passwordConfirm", user.getPasswordConfirm());
