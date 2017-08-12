@@ -52,4 +52,9 @@ public class UserDetailsServiceImpl implements UserDetailsService, UserService {
     public List<User> getAllUsers() {
         return userRepository.findAll();
     }
+
+    @Override
+    public void delete(long id) {
+        userRepository.delete(id);
+    }
 }

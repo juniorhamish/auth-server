@@ -2,8 +2,10 @@ package auth.steps;
 
 import static auth.steps.matchers.ServiceMatchers.fieldError;
 import static io.restassured.RestAssured.given;
+import static io.restassured.RestAssured.post;
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.startsWith;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.junit.Assert.assertThat;
 
@@ -11,6 +13,7 @@ import auth.steps.matchers.FieldValidationMatcher;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
+import cucumber.api.PendingException;
 import cucumber.api.java.Before;
 import cucumber.api.java.en.And;
 import cucumber.api.java.en.Then;
@@ -61,6 +64,11 @@ public class RestSteps {
         return response;
     }
 
+    Response executeDelete(String url, String authToken) {
+        response = given().header("Authorization", "Bearer " + authToken).delete(url).thenReturn();
+        return response;
+    }
+
     @Then("^the response status is (\\d+)$")
     public void validateStatusCode(int expectedResponseCode) {
         assertThat(response.statusCode(), is(expectedResponseCode));
@@ -76,5 +84,11 @@ public class RestSteps {
         FieldValidationMatcher[] matchers = new FieldValidationMatcher[fieldErrors.size()];
         Arrays.setAll(matchers, i -> new FieldValidationMatcher(fieldErrors.get(i).getField(), fieldErrors.get(i).getMessage()));
         return matchers;
+    }
+
+    @And("^the error message is \"([^\"]*)\"$")
+    public void verifyErrorMessageInResponse(String expectedErrorMessage) {
+        ErrorResponse errorResponse = response.as(ErrorResponse.class);
+        assertThat(errorResponse.getMessage(), is(expectedErrorMessage));
     }
 }
