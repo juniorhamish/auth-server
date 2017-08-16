@@ -20,6 +20,9 @@ import uk.co.dajohnston.auth.model.Role;
 @EnableWebSecurity
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
+    private static final String[] OPEN_PATHS = new String[]{"/login", "/signup"};
+    private static final String[] ADMIN_PATHS = new String[]{"/users", "/users/{\\d+}"};
+
     private final UserDetailsService userDetailsService;
     private final BCryptPasswordEncoder passwordEncoder;
     private final JsonWebTokenAuthenticationUtil jsonWebTokenAuthenticationUtil;
@@ -35,7 +38,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.csrf().disable().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and().authorizeRequests()
-                .antMatchers(HttpMethod.POST, "/login", "/signup").permitAll().antMatchers("/users").hasRole(Role.ADMIN.name()).anyRequest()
+                .antMatchers(HttpMethod.POST, OPEN_PATHS).permitAll().antMatchers(ADMIN_PATHS).hasRole(Role.ADMIN.name()).anyRequest()
                 .authenticated();
         http.addFilterBefore(new JsonWebTokenLoginFilter("/login", authenticationManager(), jsonWebTokenAuthenticationUtil),
                 UsernamePasswordAuthenticationFilter.class);
