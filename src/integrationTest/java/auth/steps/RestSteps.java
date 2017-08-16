@@ -1,6 +1,7 @@
 package auth.steps;
 
 import static auth.steps.matchers.ServiceMatchers.fieldError;
+import static io.restassured.RestAssured.get;
 import static io.restassured.RestAssured.given;
 import static io.restassured.RestAssured.post;
 import static org.hamcrest.CoreMatchers.hasItem;
@@ -22,6 +23,7 @@ import io.restassured.config.ObjectMapperConfig;
 import io.restassured.config.RestAssuredConfig;
 import io.restassured.mapper.factory.Jackson2ObjectMapperFactory;
 import io.restassured.response.Response;
+import io.restassured.specification.RequestSpecification;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -56,6 +58,18 @@ public class RestSteps {
         };
         ObjectMapperConfig objectMapperConfig = new ObjectMapperConfig().jackson2ObjectMapperFactory(jackson2ObjectMapperFactory);
         RestAssured.config = RestAssuredConfig.config().objectMapperConfig(objectMapperConfig);
+    }
+
+    Response executeGet(String url) {
+        RequestSpecification requestSpecification = given();
+        if (response != null) {
+            String authorization = response.getHeader("Authorization");
+            if (authorization != null) {
+                requestSpecification = requestSpecification.header("Authorization", authorization);
+            }
+        }
+        response = requestSpecification.get(url).thenReturn();
+        return response;
     }
 
     Response executePost(String url, Map<String, String> params) {

@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import uk.co.dajohnston.auth.exception.SignUpException;
 import uk.co.dajohnston.auth.filter.JsonWebTokenAuthenticationUtil;
+import uk.co.dajohnston.auth.model.Role;
 import uk.co.dajohnston.auth.model.User;
 import uk.co.dajohnston.auth.service.UserService;
 import uk.co.dajohnston.auth.validator.UserValidator;
@@ -46,6 +47,7 @@ public class UserController {
         if (bindingResult.hasErrors()) {
             throw new SignUpException(bindingResult.getFieldErrors());
         }
+        user.setRole(Role.USER);
         userService.save(user);
         authenticateUserAndSetSession(user, response);
 

@@ -1,6 +1,12 @@
 package uk.co.dajohnston.auth.service;
 
-import java.util.Arrays;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.collection.IsIterableContainingInOrder.contains;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+import java.util.Collections;
 import java.util.List;
 import org.junit.Before;
 import org.junit.Rule;
@@ -19,16 +25,10 @@ import uk.co.dajohnston.auth.model.Role;
 import uk.co.dajohnston.auth.model.User;
 import uk.co.dajohnston.auth.repository.UserRepository;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.collection.IsIterableContainingInOrder.contains;
-import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
 @RunWith(MockitoJUnitRunner.class)
 public class UserDetailsServiceImplTest {
 
-    public static final String TEST_EMAIL_ADDRESS = "test@foo.com";
+    private static final String TEST_EMAIL_ADDRESS = "test@foo.com";
     @Rule
     public ExpectedException expectedException = ExpectedException.none();
     @Mock
@@ -65,21 +65,20 @@ public class UserDetailsServiceImplTest {
     }
 
     @Test
-    public void shouldEncryptPasswordAndSetRoleToUserBeforeSaving() {
+    public void shouldEncryptPasswordBeforeSaving() {
         User user = mock(User.class);
         when(user.getPassword()).thenReturn("password");
         when(passwordEncoder.encode("password")).thenReturn("Encoded");
         userDetailsService.save(user);
         InOrder inOrder = Mockito.inOrder(user, userRepository);
         inOrder.verify(user).setPassword("Encoded");
-        inOrder.verify(user).setRole(Role.USER);
         inOrder.verify(userRepository).save(user);
     }
 
     @Test
     public void shouldGetAllUsersFromRepository() {
         User user = new User();
-        when(userRepository.findAll()).thenReturn(Arrays.asList(user));
+        when(userRepository.findAll()).thenReturn(Collections.singletonList(user));
         List<User> allUsers = userDetailsService.getAllUsers();
         assertThat(allUsers, contains(user));
     }

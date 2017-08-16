@@ -1,16 +1,19 @@
 package auth.steps;
 
+import static auth.steps.matchers.ServiceMatchers.all;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.junit.Assert.assertThat;
 
 import cucumber.api.java.After;
+import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.restassured.response.Response;
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -20,6 +23,7 @@ import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import uk.co.dajohnston.auth.model.Role;
 import uk.co.dajohnston.auth.model.User;
+import uk.co.dajohnston.auth.service.UserService;
 
 public class UserSteps {
 
@@ -27,6 +31,8 @@ public class UserSteps {
 
     @Autowired
     private RestSteps restSteps;
+    @Autowired
+    private UserService userService;
     private Response response;
     private Set<Long> registeredUsers = new HashSet<>();
 
@@ -46,7 +52,8 @@ public class UserSteps {
         user.setEmailAddress("dave@test.com");
         user.setPasswordConfirm("Password1");
         user.setPassword("Password1");
-        registerUser(Collections.singletonList(user));
+        user.setRole(Role.ADMIN);
+        registerUser(user);
     }
 
     @Then("^the user should have the \"([^\"]*)\" role$")
@@ -67,9 +74,24 @@ public class UserSteps {
         return Jwts.parser().setSigningKey(SECRET_KEY).parseClaimsJws(token).getBody();
     }
 
-    @When("^I register user:$")
-    public void registerUser(List<User> users) {
-        User user = users.get(0);
+    @When("^I register users?:$")
+    public void registerUsers(List<User> users) {
+        users.forEach(this::registerUser);
+    }
+
+    @Given("^I have users?:$")
+    public void saveUsers(List<User> users) {
+        users.forEach(this::saveUser);
+    }
+
+    private void saveUser(User user) {
+        userService.save(user);
+        if (user.getId() != null) {
+            registeredUsers.add(user.getId());
+        }
+    }
+
+    private void registerUser(User user) {
         Map<String, String> data = new HashMap<>();
         data.put("firstName", user.getFirstName());
         data.put("lastName", user.getLastName());
@@ -90,5 +112,16 @@ public class UserSteps {
         data.put("emailAddress", emailAddress);
         data.put("password", password);
         response = restSteps.executePost("/login", data);
+    }
+
+    @When("^I request all users$")
+    public void requestAllUsers() {
+        response = restSteps.executeGet("/users");
+    }
+
+    @Then("^the response contains users:$")
+    public void verifyResponseContainsUsers(List<User> expectedUsers) {
+        User[] users = response.as(User[].class);
+        assertThat(Arrays.asList(users), containsInAnyOrder(all(expectedUsers)));
     }
 }

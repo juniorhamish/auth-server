@@ -1,5 +1,10 @@
 package uk.co.dajohnston.auth.controller;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import java.util.ArrayList;
 import java.util.List;
 import javax.servlet.http.HttpServletResponse;
@@ -16,14 +21,10 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.validation.BindingResult;
 import uk.co.dajohnston.auth.exception.SignUpException;
 import uk.co.dajohnston.auth.filter.JsonWebTokenAuthenticationUtil;
+import uk.co.dajohnston.auth.model.Role;
 import uk.co.dajohnston.auth.model.User;
 import uk.co.dajohnston.auth.service.UserService;
 import uk.co.dajohnston.auth.validator.UserValidator;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class UserControllerTest {
@@ -60,12 +61,14 @@ public class UserControllerTest {
     }
 
     @Test
-    public void shouldSaveUserIfValidationSucceeds() {
+    public void shouldSaveUserWithUserRoleIfValidationSucceeds() {
         when(bindingResult.hasErrors()).thenReturn(false);
 
+        user.setRole(Role.ADMIN);
         userController.registration(user, bindingResult, httpServletResponse);
 
         verify(userService).save(user);
+        assertThat(user.getRole(), is(Role.USER));
     }
 
     @Test
@@ -84,6 +87,12 @@ public class UserControllerTest {
         InOrder inOrder = Mockito.inOrder(userValidator, bindingResult);
         inOrder.verify(userValidator).validate(user, bindingResult);
         inOrder.verify(bindingResult).hasErrors();
+    }
+
+    @Test
+    public void shouldRemoveUserUsingUserServiceOnDelete() {
+        userController.deleteUser(1L);
+        verify(userService).delete(1L);
     }
 
 }
