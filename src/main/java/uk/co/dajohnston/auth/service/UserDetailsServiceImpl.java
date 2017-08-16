@@ -12,7 +12,6 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import uk.co.dajohnston.auth.model.Role;
 import uk.co.dajohnston.auth.model.User;
 import uk.co.dajohnston.auth.repository.UserRepository;
 
