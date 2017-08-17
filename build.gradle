@@ -46,6 +46,7 @@ dependencies {
     compile 'org.springframework.boot:spring-boot-starter-security'
     compile 'org.springframework.boot:spring-boot-starter-web'
     compile 'org.springframework.boot:spring-boot-starter-data-jpa'
+    compile 'org.springframework.boot:spring-boot-starter-actuator'
     compile 'io.jsonwebtoken:jjwt:0.7.0'
     compile 'commons-validator:commons-validator:1.6'
     compile 'com.google.code.gson:gson:2.8.0'

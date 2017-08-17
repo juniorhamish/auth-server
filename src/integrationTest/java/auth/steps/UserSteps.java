@@ -102,7 +102,7 @@ public class UserSteps {
         data.put("emailAddress", user.getEmailAddress().isEmpty() ? null : user.getEmailAddress());
         data.put("password", user.getPassword());
         data.put("passwordConfirm", user.getPasswordConfirm());
-        response = restSteps.executePost("/signup", data);
+        response = restSteps.executePost("/users", data);
 
         User userResponse = response.as(User.class);
         if (userResponse.getId() != null) {

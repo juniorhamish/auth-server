@@ -41,7 +41,7 @@ public class UserController {
         return userService.getAllUsers();
     }
 
-    @RequestMapping(value = "/signup", method = RequestMethod.POST)
+    @RequestMapping(value = "/users", method = RequestMethod.POST)
     public User registration(@RequestBody User user, BindingResult bindingResult, HttpServletResponse response) {
         userValidator.validate(user, bindingResult);
         if (bindingResult.hasErrors()) {
