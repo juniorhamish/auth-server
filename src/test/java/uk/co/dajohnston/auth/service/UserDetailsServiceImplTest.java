@@ -4,6 +4,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.collection.IsIterableContainingInOrder.contains;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.Collections;
@@ -81,6 +82,12 @@ public class UserDetailsServiceImplTest {
         when(userRepository.findAll()).thenReturn(Collections.singletonList(user));
         List<User> allUsers = userDetailsService.getAllUsers();
         assertThat(allUsers, contains(user));
+    }
+
+    @Test
+    public void shouldDeleteUserUsingRepository() {
+        userDetailsService.delete(1L);
+        verify(userRepository).delete(1L);
     }
 
 }
