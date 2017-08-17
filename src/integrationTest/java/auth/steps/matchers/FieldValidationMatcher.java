@@ -12,9 +12,9 @@ public class FieldValidationMatcher extends BaseMatcher<FieldValidation> {
     private final String field;
     private final String errorMessage;
 
-    public FieldValidationMatcher(String field, String errorMessage) {
-        this.field = field;
-        this.errorMessage = errorMessage;
+    private FieldValidationMatcher(FieldValidation fieldValidation) {
+        this.field = fieldValidation.getField();
+        this.errorMessage = fieldValidation.getMessage();
     }
 
     @Override
@@ -35,7 +35,6 @@ public class FieldValidationMatcher extends BaseMatcher<FieldValidation> {
     }
 
     public static FieldValidationMatcher[] all(List<FieldValidation> fieldErrors) {
-        return fieldErrors.stream().map(fieldError -> new FieldValidationMatcher(fieldError.getField(), fieldError.getMessage()))
-                .toArray(FieldValidationMatcher[]::new);
+        return fieldErrors.stream().map(FieldValidationMatcher::new).toArray(FieldValidationMatcher[]::new);
     }
 }

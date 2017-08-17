@@ -11,7 +11,7 @@ public class UserMatcher extends BaseMatcher<User> {
 
     private User expectedUser;
 
-    public UserMatcher(User expectedUser) {
+    private UserMatcher(User expectedUser) {
         this.expectedUser = expectedUser;
     }
 

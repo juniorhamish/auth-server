@@ -29,12 +29,16 @@ public class UserSteps {
 
     private static final String SECRET_KEY = "Tn5UViRLPEgpI0hvbmZRbjpmTlY5RzJpJys+STxfImp7X203KGMsdCY5ZSpfYmNUTi0nQVUoVj9eZXw3SDNv";
 
-    @Autowired
     private RestSteps restSteps;
-    @Autowired
     private UserService userService;
     private Response response;
     private Set<Long> registeredUsers = new HashSet<>();
+
+    @Autowired
+    public UserSteps(RestSteps restSteps, UserService userService) {
+        this.restSteps = restSteps;
+        this.userService = userService;
+    }
 
     @After
     public void cleanup() {
