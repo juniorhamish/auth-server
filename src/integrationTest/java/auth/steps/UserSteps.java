@@ -1,6 +1,6 @@
 package auth.steps;
 
-import static auth.steps.matchers.ServiceMatchers.all;
+import static auth.steps.matchers.UserMatcher.all;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.junit.Assert.assertThat;

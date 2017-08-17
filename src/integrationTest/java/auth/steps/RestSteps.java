@@ -1,12 +1,8 @@
 package auth.steps;
 
-import static auth.steps.matchers.ServiceMatchers.fieldError;
-import static io.restassured.RestAssured.get;
+import static auth.steps.matchers.FieldValidationMatcher.all;
 import static io.restassured.RestAssured.given;
-import static io.restassured.RestAssured.post;
-import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.startsWith;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.junit.Assert.assertThat;
 
@@ -14,7 +10,6 @@ import auth.steps.matchers.FieldValidationMatcher;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
-import cucumber.api.PendingException;
 import cucumber.api.java.Before;
 import cucumber.api.java.en.And;
 import cucumber.api.java.en.Then;
@@ -24,10 +19,8 @@ import io.restassured.config.RestAssuredConfig;
 import io.restassured.mapper.factory.Jackson2ObjectMapperFactory;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import org.hamcrest.Matcher;
 import org.springframework.boot.context.embedded.LocalServerPort;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
@@ -42,6 +35,7 @@ import uk.co.dajohnston.auth.model.FieldValidation;
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 public class RestSteps {
 
+    private static final String AUTHORIZATION_HEADER = "Authorization";
     @LocalServerPort
     int port;
 
@@ -63,9 +57,9 @@ public class RestSteps {
     Response executeGet(String url) {
         RequestSpecification requestSpecification = given();
         if (response != null) {
-            String authorization = response.getHeader("Authorization");
+            String authorization = response.getHeader(AUTHORIZATION_HEADER);
             if (authorization != null) {
-                requestSpecification = requestSpecification.header("Authorization", authorization);
+                requestSpecification = requestSpecification.header(AUTHORIZATION_HEADER, authorization);
             }
         }
         response = requestSpecification.get(url).thenReturn();
@@ -79,7 +73,7 @@ public class RestSteps {
     }
 
     Response executeDelete(String url, String authToken) {
-        response = given().header("Authorization", "Bearer " + authToken).delete(url).thenReturn();
+        response = given().header(AUTHORIZATION_HEADER, "Bearer " + authToken).delete(url).thenReturn();
         return response;
     }
 
@@ -91,13 +85,7 @@ public class RestSteps {
     @And("^the response contains error:$")
     public void theResponseContainsError(List<FieldValidation> fieldErrors) {
         ErrorResponse errorResponse = response.as(ErrorResponse.class);
-        assertThat(errorResponse.getFieldErrors(), containsInAnyOrder(fieldErrors(fieldErrors)));
-    }
-
-    private FieldValidationMatcher[] fieldErrors(List<FieldValidation> fieldErrors) {
-        FieldValidationMatcher[] matchers = new FieldValidationMatcher[fieldErrors.size()];
-        Arrays.setAll(matchers, i -> new FieldValidationMatcher(fieldErrors.get(i).getField(), fieldErrors.get(i).getMessage()));
-        return matchers;
+        assertThat(errorResponse.getFieldErrors(), containsInAnyOrder(all(fieldErrors)));
     }
 
     @And("^the error message is \"([^\"]*)\"$")

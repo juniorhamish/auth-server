@@ -1,6 +1,7 @@
 package auth.steps.matchers;
 
 import java.text.MessageFormat;
+import java.util.List;
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
 import uk.co.dajohnston.auth.model.FieldValidation;
@@ -30,7 +31,11 @@ public class FieldValidationMatcher extends BaseMatcher<FieldValidation> {
     @Override
     public void describeMismatch(Object item, Description description) {
         FieldValidation fieldValidation = (FieldValidation) item;
-        description.appendText("was ")
-                .appendText(MessageFormat.format(PATTERN, fieldValidation.getField(), fieldValidation.getMessage()));
+        description.appendText("was ").appendText(MessageFormat.format(PATTERN, fieldValidation.getField(), fieldValidation.getMessage()));
+    }
+
+    public static FieldValidationMatcher[] all(List<FieldValidation> fieldErrors) {
+        return fieldErrors.stream().map(fieldError -> new FieldValidationMatcher(fieldError.getField(), fieldError.getMessage()))
+                .toArray(FieldValidationMatcher[]::new);
     }
 }
